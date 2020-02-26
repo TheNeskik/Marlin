@@ -188,7 +188,7 @@ void GcodeSuite::G76() {
 
       // Move probe to probing point and wait for probe to reach target temp
       destination.set(temp_comp.measure_point_x, temp_comp.measure_point_y, 0.15);
-      do_blocking_move_to(destination.x, destination.y, destination.z);
+      do_blocking_move_to(destination);
       SERIAL_ECHOLNPGM("Waiting for probe heating.");
       while (thermalManager.degProbe() < target_probe) {
         idle(
