@@ -113,13 +113,17 @@ void GcodeSuite::G76() {
 
   if (do_bed_cal || do_probe_cal) {
     // Ensure park position is reachable
-    if (!(position_is_reachable(parkpos) && WITHIN(park_pos.z, Z_MIN_POS - fslop, Z_MAX_POS + fslop))) {
-      SERIAL_ECHOLNPGM("!Park position unreachable - aborting.");
-      return;
+    bool reachable = position_is_reachable(parkpos) || WITHIN(park_pos.z, Z_MIN_POS - fslop, Z_MAX_POS + fslop);
+    if (!reachable)
+      SERIAL_ECHOLNPGM("!Park");
+    else {
+      // Ensure probe position is reachable
+      reachable = probe.can_reach(ppos);
+      if (!reachable) SERIAL_ECHOLNPGM("!Probe");
     }
-    // Ensure probe position is reachable
-    if (!probe.can_reach(ppos)) {
-      SERIAL_ECHOLNPGM("!Probe position unreachable - aborting.");
+
+    if (!reachable) {
+      SERIAL_ECHOLNPGM(" position unreachable - aborting.");
       return;
     }
 
@@ -171,7 +175,6 @@ void GcodeSuite::G76() {
           break;
         }
       }
-
       if (timeout) break;
 
       // Move the nozzle to the probing point and wait for the probe to reach target temp
@@ -254,7 +257,6 @@ void GcodeSuite::G76() {
           break;
         }
       }
-
       if (timeout) break;
 
       // Raise nozzle before probing
