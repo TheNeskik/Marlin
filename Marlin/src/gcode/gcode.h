@@ -795,7 +795,10 @@ private:
     FORCE_INLINE static void M869() { I2CPEM.M869(); }
   #endif
 
-  TERN_(PROBE_TEMP_COMPENSATION, static void M871());
+   #if ENABLED(PROBE_TEMP_COMPENSATION)
+    static void M871();
+    static void M872();
+  #endif
 
   TERN_(LIN_ADVANCE, static void M900());
 
