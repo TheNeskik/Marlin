@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "Marlin",
+			"path": ".."
+		},
+		{
+			"name": "Marlin-bugfix-2.0.x",
+			"path": "..\\..\\..\\Marlin\\Config_20042020\\Marlin-bugfix-2.0.x"
+		},
+		{
+			"name": "Config_11062020",
+			"path": "..\\..\\..\\Marlin\\Config_11062020"
+		}
+	],
+	"settings": {}
+}
