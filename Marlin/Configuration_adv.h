@@ -1695,7 +1695,7 @@
     // Probe temperature calibration generates a table of values starting at PTC_SAMPLE_START
     // (e.g. 30), in steps of PTC_SAMPLE_RES (e.g. 5) with PTC_SAMPLE_COUNT (e.g. 10) samples.
 
-     #define PTC_SAMPLE_START  25.0f
+     #define PTC_SAMPLE_START  30.0f
      #define PTC_SAMPLE_RES    5.0f
      #define PTC_SAMPLE_COUNT  10U
 
@@ -2491,9 +2491,9 @@
 
   #if EITHER(SENSORLESS_HOMING, SENSORLESS_PROBING)
     // TMC2209: 0...255. TMC2130: -64...63
-    #define X_STALL_SENSITIVITY  150
+    #define X_STALL_SENSITIVITY  83
     #define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
-    #define Y_STALL_SENSITIVITY  130
+    #define Y_STALL_SENSITIVITY  83
     #define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
     //#define Z_STALL_SENSITIVITY  8
     //#define Z2_STALL_SENSITIVITY Z_STALL_SENSITIVITY

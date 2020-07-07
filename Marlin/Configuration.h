@@ -489,9 +489,9 @@
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
   // AMKS8
-  #define DEFAULT_Kp 24.31
-  #define DEFAULT_Ki 1.99
-  #define DEFAULT_Kd 74.13
+  #define DEFAULT_Kp 15.09
+  #define DEFAULT_Ki 1.00
+  #define DEFAULT_Kd 56.88
 
   // MakerGear
   //#define DEFAULT_Kp 7.0
@@ -540,9 +540,9 @@
 
   //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 28.75
-  #define DEFAULT_bedKi 1.23
-  #define DEFAULT_bedKd 447.10
+  #define DEFAULT_bedKp 20.24
+  #define DEFAULT_bedKi 0.78
+  #define DEFAULT_bedKd 349.70
 
   //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   //from pidautotune
@@ -972,7 +972,7 @@
  *
  * Specify a Probe position as { X, Y, Z }
  */
-#define NOZZLE_TO_PROBE_OFFSET { 23, 5, -0.65 }
+#define NOZZLE_TO_PROBE_OFFSET { 23, 5, -1.00 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1559,7 +1559,7 @@
  * Attention: EXPERIMENTAL. G-code arguments may change.
  *
  */
-//#define NOZZLE_CLEAN_FEATURE
+#define NOZZLE_CLEAN_FEATURE
 
 #if ENABLED(NOZZLE_CLEAN_FEATURE)
   // Default number of pattern repetitions
@@ -1570,8 +1570,8 @@
 
   // Specify positions for each tool as { { X, Y, Z }, { X, Y, Z } }
   // Dual hotend system may use { {  -20, (Y_BED_SIZE / 2), (Z_MIN_POS + 1) },  {  420, (Y_BED_SIZE / 2), (Z_MIN_POS + 1) }}
-  #define NOZZLE_CLEAN_START_POINT { {  30, 30, (Z_MIN_POS + 1) } }
-  #define NOZZLE_CLEAN_END_POINT   { { 100, 60, (Z_MIN_POS + 1) } }
+  #define NOZZLE_CLEAN_START_POINT { { -10,220, (Z_MIN_POS + 0.5) } }
+  #define NOZZLE_CLEAN_END_POINT   { {  -5,185, (Z_MIN_POS + 0.5) } }
 
   // Circular pattern radius
   #define NOZZLE_CLEAN_CIRCLE_RADIUS 6.5
