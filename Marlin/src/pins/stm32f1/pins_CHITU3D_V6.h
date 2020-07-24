@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -73,6 +73,10 @@
 #define Z_STEP_PIN                          PB9
 #define Z_DIR_PIN                           PE0
 
+#define Z2_ENABLE_PIN                       PF3
+#define Z2_STEP_PIN                         PF5
+#define Z2_DIR_PIN                          PF1
+
 #define E0_ENABLE_PIN                       PB8
 #define E0_STEP_PIN                         PB4
 #define E0_DIR_PIN                          PB5
@@ -112,9 +116,6 @@
 //
 // TronXY TFT Support
 //
-#define FSMC_GRAPHICAL_TFT
-#define TOUCH_BUTTONS
-
 #if ENABLED(FSMC_GRAPHICAL_TFT)
   #define FSMC_UPSCALE 3
   #define LCD_FULL_PIXEL_WIDTH 480
