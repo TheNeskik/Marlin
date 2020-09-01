@@ -2230,7 +2230,7 @@
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #if AXIS_IS_TMC(X)
-    #define X_CURRENT       450        // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT       350        // (mA) RMS current. Multiply by 1.414 for peak current.
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS     16    // 0..256
     #define X_RSENSE          0.11
@@ -2246,7 +2246,7 @@
   #endif
 
   #if AXIS_IS_TMC(Y)
-    #define Y_CURRENT       450
+    #define Y_CURRENT       350
     #define Y_CURRENT_HOME  Y_CURRENT
     #define Y_MICROSTEPS     16
     #define Y_RSENSE          0.11
@@ -2468,7 +2468,7 @@
    * STEALTHCHOP_(XY|Z|E) must be enabled to use HYBRID_THRESHOLD.
    * M913 X/Y/Z/E to live tune the setting
    */
-  #define HYBRID_THRESHOLD
+  //#define HYBRID_THRESHOLD
 
   #define X_HYBRID_THRESHOLD     120  // [mm/s]
   #define X2_HYBRID_THRESHOLD    120
@@ -2561,12 +2561,7 @@
    *   stepperY.intpol(0); \
    * }
    */
-  #define TMC_ADV() { \
-  stepperX.pwm_autoscale(true); \
-  stepperY.pwm_autoscale(true); \
-  stepperZ.pwm_autoscale(true); \
-  stepperZ2.pwm_autoscale(true); \
-  }
+  //#define TMC_ADV() {}
 
 #endif // HAS_TRINAMIC_CONFIG
 
@@ -3176,7 +3171,7 @@
  *
  * Execute certain G-code commands immediately after power-on.
  */
-#define STARTUP_COMMANDS "M17\nG4 P200\nG28"
+//#define STARTUP_COMMANDS "M17\nG4 P200\nG28"
 
 /**
  * G-code Macros
@@ -3508,7 +3503,7 @@
 #if ENABLED(PRINTCOUNTER)
   #define SERVICE_WARNING_BUZZES  3
   // Activate up to 3 service interval watchdogs
-  #define SERVICE_NAME_1      "Service S"
+  #define SERVICE_NAME_1      "Maintenance meca"
   #define SERVICE_INTERVAL_1  100 // print hours
   //#define SERVICE_NAME_2      "Service L"
   //#define SERVICE_INTERVAL_2  200 // print hours

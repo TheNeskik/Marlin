@@ -36,6 +36,17 @@
 #include "../../module/temperature.h"
 #include "../../module/probe.h"
 #include "../../feature/probe_temp_comp.h"
+#include "../../lcd/ultralcd.h"
+
+#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
+  #include "../../module/printcounter.h"
+#endif
+
+#if ENABLED(PRINTER_EVENT_LEDS)
+  #include "../../feature/leds/leds.h"
+#endif
+
+#include "../../MarlinCore.h" // for wait_for_heatup and idle()
 
 /**
  * G76: calibrate probe and/or bed temperature offsets
@@ -358,38 +369,22 @@ void GcodeSuite::M871() {
 
 #endif // PROBE_TEMP_COMPENSATION
 void GcodeSuite::M872() {
+if (DEBUGGING(DRYRUN)) return;
 
-const xyz_pos_t probe_pos_xyz = temp_comp.measure_point + xyz_pos_t({ 0.0f, 0.0f, 0.5f }),
-                noz_pos_xyz = probe_pos_xyz - probe.offset_xy; // Nozzle position based on probe position
+  const bool no_wait_for_cooling = parser.seenval('S');
+  if (!no_wait_for_cooling && !parser.seenval('R')) {
+    SERIAL_ERROR_MSG("No target temperature set.");
+    return;
+  }
+  #if ENABLED(PRINTJOB_TIMER_AUTOSTART)
+  else if (parser.value_celsius() > BED_MINTEMP) {
+    print_job_timer.start();
+  }
+  #endif
 
-auto report_temps = [](millis_t &ntr, millis_t timeout=0) {
-    idle_no_sleep();
-    const millis_t ms = millis();
-    if (ELAPSED(ms, ntr)) {
-      ntr = ms + 1000;
-      thermalManager.print_heater_states(active_extruder);
-    }
-    return (timeout && ELAPSED(ms, timeout));
-  };
+  const float target_temp = parser.value_celsius();
 
-millis_t next_temp_report = millis() + 1000;
+  ui.set_status_P(thermalManager.isHeatingProbe(target_temp) ? GET_TEXT(MSG_PROBE_HEATING) : GET_TEXT(MSG_PROBE_COOLING));
 
-  int setTargetPinda = 0;
-  if (parser.seen('S')){
-    setTargetPinda = parser.value_celsius();
-    } 
-    else {
-      setTargetPinda = 35;
-    }
-    do_blocking_move_to(noz_pos_xyz);
-      SERIAL_ECHOLNPAIR("Waiting for probe heating. Probe:", setTargetPinda);
-      const millis_t probe_timeout_ms = millis() + 900UL * 1000UL;
-      while (thermalManager.degProbe() < setTargetPinda) {
-        if (report_temps(next_temp_report, probe_timeout_ms)) {
-          SERIAL_ECHOLNPGM("!Probe heating timed out.");
-          break;
-        }
-        report_temps(next_temp_report);
-      }
-
+  thermalManager.wait_for_probe(target_temp, no_wait_for_cooling);
 }
