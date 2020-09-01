@@ -366,8 +366,7 @@ void GcodeSuite::M871() {
   else // Print current Z-probe adjustments. Note: Values in EEPROM might differ.
     temp_comp.print_offsets();
 }
-
-#endif // PROBE_TEMP_COMPENSATION
+#endif
 void GcodeSuite::M872() {
 if (DEBUGGING(DRYRUN)) return;
 
