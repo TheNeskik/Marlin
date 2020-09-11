@@ -1735,6 +1735,8 @@
     // Note: the Z=0.0f offset is determined by the probe offset which can be set using M851.
      #define PTC_PROBE_HEATING_OFFSET 0.2f
 
+     #define PTC_BED_TEMP 75.0f
+
     // Height to raise the Z-probe between heating and taking the next measurement. Some probes
     // may fail to untrigger if they have been triggered for a long time, which can be solved by
     // increasing the height the probe is raised to.
