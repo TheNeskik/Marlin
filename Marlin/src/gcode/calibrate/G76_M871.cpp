@@ -329,40 +329,6 @@ void GcodeSuite::M871() {
       SERIAL_ECHOLNPGM("!Invalid index. Failed to set value (note: value at index 0 is constant).");
 
   }
-  else if (parser.seen("T")) {
-
-    int setTargetPinda = 0;
-
-    const xyz_pos_t probe_pos_xyz = temp_comp.measure_point + xyz_pos_t({ 0.0f, 0.0f, 0.5f }),
-                    noz_pos_xyz = probe_pos_xyz - probe.offset_xy; // Nozzle position based on probe position
-
-    auto report_temps = [](millis_t &ntr, millis_t timeout=0) {
-    idle_no_sleep();
-    const millis_t ms = millis();
-    if (ELAPSED(ms, ntr)) {
-      ntr = ms + 1000;
-      thermalManager.print_heater_states(active_extruder);
-    }
-    return (timeout && ELAPSED(ms, timeout));
-  };
-
-    millis_t next_temp_report = millis() + 1000;
-
-  
-    setTargetPinda = parser.value_celsius();
-
-    do_blocking_move_to(noz_pos_xyz);
-    SERIAL_ECHOLNPAIR("Waiting for probe heating. Probe:", setTargetPinda);
-    const millis_t probe_timeout_ms = millis() + 900UL * 1000UL;
-    while (thermalManager.degProbe() < setTargetPinda) {
-      if (report_temps(next_temp_report, probe_timeout_ms)) {
-        SERIAL_ECHOLNPGM("!Probe heating timed out.");
-        break;
-      }
-      report_temps(next_temp_report);
-    }
-
-}
   else // Print current Z-probe adjustments. Note: Values in EEPROM might differ.
     temp_comp.print_offsets();
 }
