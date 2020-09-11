@@ -173,7 +173,7 @@ void GcodeSuite::G76() {
    ******************************************/
 
   // Report temperatures every second and handle heating timeouts
-  millis_t next_temp_report = millis() + 1000;
+  millis_t next_temp_report = millis() + SEC_TO_MS(1);
 
   auto report_targets = [&](const uint16_t tb, const uint16_t tp) {
     SERIAL_ECHOLNPAIR("Target Bed:", tb, " Probe:", tp);
@@ -200,7 +200,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(parkpos);
 
       // Wait for heatbed to reach target temp and probe to cool below target temp
-      if (wait_for_temps(target_bed, target_probe, next_temp_report, millis() + MIN_TO_MS(15))) {
+      if (wait_for_temps(target_bed, target_probe, next_temp_report, millis() + MIN_TO_MS(5))) {
         SERIAL_ECHOLNPGM("!Bed heating timeout.");
         break;
       }
@@ -255,7 +255,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(noz_pos_xyz);
 
       SERIAL_ECHOLNPAIR("Waiting for probe heating. Bed:", target_bed, " Probe:", target_probe);
-      const millis_t probe_timeout_ms = millis() + 900UL * 1000UL;
+      const millis_t probe_timeout_ms = millis() + SEC_TO_MS(60);
       while (thermalManager.degProbe() < target_probe) {
         if (report_temps(next_temp_report, probe_timeout_ms)) {
           SERIAL_ECHOLNPGM("!Probe heating timed out.");
