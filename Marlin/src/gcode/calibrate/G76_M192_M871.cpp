@@ -48,6 +48,17 @@
 
 #include "../../MarlinCore.h" // for wait_for_heatup and idle()
 
+#include "../../lcd/ultralcd.h"
+#include "../../MarlinCore.h" // for wait_for_heatup and idle()
+
+#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
+  #include "../../module/printcounter.h"
+#endif
+
+#if ENABLED(PRINTER_EVENTS_LEDS)
+  #include "../../feature/leds/leds.h"
+#endif
+
 /**
  * G76: calibrate probe and/or bed temperature offsets
  *  Notes:
@@ -173,7 +184,7 @@ void GcodeSuite::G76() {
    ******************************************/
 
   // Report temperatures every second and handle heating timeouts
-  millis_t next_temp_report = millis() + 1000;
+  millis_t next_temp_report = millis() + SEC_TO_MS(1);
 
   auto report_targets = [&](const uint16_t tb, const uint16_t tp) {
     SERIAL_ECHOLNPAIR("Target Bed:", tb, " Probe:", tp);
@@ -200,7 +211,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(parkpos);
 
       // Wait for heatbed to reach target temp and probe to cool below target temp
-      if (wait_for_temps(target_bed, target_probe, next_temp_report, millis() + MIN_TO_MS(15))) {
+      if (wait_for_temps(target_bed, target_probe, next_temp_report, millis() + MIN_TO_MS(5))) {
         SERIAL_ECHOLNPGM("!Bed heating timeout.");
         break;
       }
@@ -255,7 +266,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(noz_pos_xyz);
 
       SERIAL_ECHOLNPAIR("Waiting for probe heating. Bed:", target_bed, " Probe:", target_probe);
-      const millis_t probe_timeout_ms = millis() + 900UL * 1000UL;
+      const millis_t probe_timeout_ms = millis() + SEC_TO_MS(60);
       while (thermalManager.degProbe() < target_probe) {
         if (report_temps(next_temp_report, probe_timeout_ms)) {
           SERIAL_ECHOLNPGM("!Probe heating timed out.");
@@ -314,76 +325,43 @@ void GcodeSuite::M871() {
   }
   else if (parser.seen("BPE")) {
     if (!parser.seenval('V')) return;
-    const int16_t val = parser.value_int();
+    const int16_t offset_val = parser.value_int();
     if (!parser.seenval('I')) return;
     const int16_t idx = parser.value_int();
     const TempSensorID mod = (parser.seen('B') ? TSI_BED :
-                              #if ENABLED(USE_TEMP_EXT_COMPENSATION)
-                                parser.seen('E') ? TSI_EXT :
-                              #endif
-                              TSI_PROBE
+                                #if ENABLED(USE_TEMP_EXT_COMPENSATION)
+                                  parser.seen('E') ? TSI_EXT :
+                                #endif
+                                TSI_PROBE
                               );
-    if (idx > 0 && temp_comp.set_offset(mod, idx - 1, val))
-      SERIAL_ECHOLNPAIR("Set value: ", val);
+    if (idx > 0 && temp_comp.set_offset(mod, idx - 1, offset_val))
+      SERIAL_ECHOLNPAIR("Set value: ", offset_val);
     else
       SERIAL_ECHOLNPGM("!Invalid index. Failed to set value (note: value at index 0 is constant).");
 
   }
-  else if (parser.seen("T")) {
-
-    int setTargetPinda = 0;
-
-    const xyz_pos_t probe_pos_xyz = temp_comp.measure_point + xyz_pos_t({ 0.0f, 0.0f, 0.5f }),
-                    noz_pos_xyz = probe_pos_xyz - probe.offset_xy; // Nozzle position based on probe position
-
-    auto report_temps = [](millis_t &ntr, millis_t timeout=0) {
-    idle_no_sleep();
-    const millis_t ms = millis();
-    if (ELAPSED(ms, ntr)) {
-      ntr = ms + 1000;
-      thermalManager.print_heater_states(active_extruder);
-    }
-    return (timeout && ELAPSED(ms, timeout));
-  };
-
-    millis_t next_temp_report = millis() + 1000;
-
-  
-    setTargetPinda = parser.value_celsius();
-
-    do_blocking_move_to(noz_pos_xyz);
-    SERIAL_ECHOLNPAIR("Waiting for probe heating. Probe:", setTargetPinda);
-    const millis_t probe_timeout_ms = millis() + 900UL * 1000UL;
-    while (thermalManager.degProbe() < setTargetPinda) {
-      if (report_temps(next_temp_report, probe_timeout_ms)) {
-        SERIAL_ECHOLNPGM("!Probe heating timed out.");
-        break;
-      }
-      report_temps(next_temp_report);
-    }
-
-}
   else // Print current Z-probe adjustments. Note: Values in EEPROM might differ.
     temp_comp.print_offsets();
 }
-#endif
-void GcodeSuite::M872() {
-if (DEBUGGING(DRYRUN)) return;
+/**
+ * M192: Wait for probe temperature sensor to reach a target
+ *
+ * Select only one of these flags:
+ *    R - Wait for heating or cooling
+ *    S - Wait only for heating
+ */
+void GcodeSuite::M192() {
+  if (DEBUGGING(DRYRUN)) return;
 
   const bool no_wait_for_cooling = parser.seenval('S');
-  if (!no_wait_for_cooling && !parser.seenval('R')) {
+  if (!no_wait_for_cooling && ! parser.seenval('R')) {
     SERIAL_ERROR_MSG("No target temperature set.");
     return;
   }
-  #if ENABLED(PRINTJOB_TIMER_AUTOSTART)
-  else if (parser.value_celsius() > BED_MINTEMP) {
-    print_job_timer.start();
-  }
-  #endif
 
   const float target_temp = parser.value_celsius();
-
-  ui.set_status_P(thermalManager.isHeatingProbe(target_temp) ? GET_TEXT(MSG_PROBE_HEATING) : GET_TEXT(MSG_PROBE_COOLING));
-
+  ui.set_status_P(thermalManager.isProbeBelowTemp(target_temp) ? GET_TEXT(MSG_PROBE_HEATING) : GET_TEXT(MSG_PROBE_COOLING));
   thermalManager.wait_for_probe(target_temp, no_wait_for_cooling);
 }
+
+#endif // PROBE_TEMP_COMPENSATION
