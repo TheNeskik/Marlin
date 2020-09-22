@@ -266,7 +266,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(noz_pos_xyz);
 
       SERIAL_ECHOLNPAIR("Waiting for probe heating. Bed:", target_bed, " Probe:", target_probe);
-      const millis_t probe_timeout_ms = millis() + SEC_TO_MS(60);
+      const millis_t probe_timeout_ms = millis() + SEC_TO_MS(120);
       while (thermalManager.degProbe() < target_probe) {
         if (report_temps(next_temp_report, probe_timeout_ms)) {
           SERIAL_ECHOLNPGM("!Probe heating timed out.");
