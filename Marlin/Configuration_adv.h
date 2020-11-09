@@ -1679,7 +1679,7 @@
  * Repeatedly attempt G29 leveling until it succeeds.
  * Stop after G29_MAX_RETRIES attempts.
  */
-#define G29_RETRY_AND_RECOVER
+//#define G29_RETRY_AND_RECOVER
 #if ENABLED(G29_RETRY_AND_RECOVER)
   #define G29_MAX_RETRIES 3
   #define G29_HALT_ON_FAILURE
@@ -2443,7 +2443,7 @@
    * Define you own with
    * { <off_time[1..15]>, <hysteresis_end[-3..12]>, hysteresis_start[1..8] }
    */
-  #define CHOPPER_TIMING CHOPPER_PRUSAMK3_24V
+  #define CHOPPER_TIMING CHOPPER_09STEP_24V
 
   /**
    * Monitor Trinamic drivers
