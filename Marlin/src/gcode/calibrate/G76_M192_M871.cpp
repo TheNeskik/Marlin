@@ -48,7 +48,7 @@
 
 #include "../../MarlinCore.h" // for wait_for_heatup and idle()
 
-#include "../../lcd/ultralcd.h"
+#include "../../lcd/marlinui.h"
 #include "../../MarlinCore.h" // for wait_for_heatup and idle()
 
 #if ENABLED(PRINTJOB_TIMER_AUTOSTART)
