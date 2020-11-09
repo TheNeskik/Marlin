@@ -36,17 +36,6 @@
 #include "../../module/temperature.h"
 #include "../../module/probe.h"
 #include "../../feature/probe_temp_comp.h"
-#include "../../lcd/ultralcd.h"
-
-#if ENABLED(PRINTJOB_TIMER_AUTOSTART)
-  #include "../../module/printcounter.h"
-#endif
-
-#if ENABLED(PRINTER_EVENT_LEDS)
-  #include "../../feature/leds/leds.h"
-#endif
-
-#include "../../MarlinCore.h" // for wait_for_heatup and idle()
 
 #include "../../lcd/marlinui.h"
 #include "../../MarlinCore.h" // for wait_for_heatup and idle()
@@ -184,7 +173,7 @@ void GcodeSuite::G76() {
    ******************************************/
 
   // Report temperatures every second and handle heating timeouts
-  millis_t next_temp_report = millis() + SEC_TO_MS(1);
+  millis_t next_temp_report = millis() + 1000;
 
   auto report_targets = [&](const uint16_t tb, const uint16_t tp) {
     SERIAL_ECHOLNPAIR("Target Bed:", tb, " Probe:", tp);
@@ -211,7 +200,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(parkpos);
 
       // Wait for heatbed to reach target temp and probe to cool below target temp
-      if (wait_for_temps(target_bed, target_probe, next_temp_report, millis() + MIN_TO_MS(5))) {
+      if (wait_for_temps(target_bed, target_probe, next_temp_report, millis() + MIN_TO_MS(15))) {
         SERIAL_ECHOLNPGM("!Bed heating timeout.");
         break;
       }
@@ -266,7 +255,7 @@ void GcodeSuite::G76() {
       do_blocking_move_to(noz_pos_xyz);
 
       SERIAL_ECHOLNPAIR("Waiting for probe heating. Bed:", target_bed, " Probe:", target_probe);
-      const millis_t probe_timeout_ms = millis() + SEC_TO_MS(120);
+      const millis_t probe_timeout_ms = millis() + 900UL * 1000UL;
       while (thermalManager.degProbe() < target_probe) {
         if (report_temps(next_temp_report, probe_timeout_ms)) {
           SERIAL_ECHOLNPGM("!Probe heating timed out.");
@@ -343,6 +332,7 @@ void GcodeSuite::M871() {
   else // Print current Z-probe adjustments. Note: Values in EEPROM might differ.
     temp_comp.print_offsets();
 }
+
 /**
  * M192: Wait for probe temperature sensor to reach a target
  *
