@@ -197,6 +197,7 @@
  * M303 - PID relay autotune S<temperature> sets the target temperature. Default 150C. (Requires PIDTEMP)
  * M304 - Set bed PID parameters P I and D. (Requires PIDTEMPBED)
  * M305 - Set user thermistor parameters R T and P. (Requires TEMP_SENSOR_x 1000)
+ * M309 - Set chamber PID parameters P I and D. (Requires PIDTEMPCHAMBER)
  * M350 - Set microstepping mode. (Requires digital microstepping pins.)
  * M351 - Toggle MS1 MS2 pins directly. (Requires digital microstepping pins.)
  * M355 - Set Case Light on/off and set brightness. (Requires CASE_LIGHT_PIN)
@@ -310,6 +311,8 @@
 
 enum AxisRelative : uint8_t { REL_X, REL_Y, REL_Z, REL_E, E_MODE_ABS, E_MODE_REL };
 
+extern const char G28_STR[];
+
 class GcodeSuite {
 public:
 
@@ -371,7 +374,6 @@ public:
   static void process_subcommands_now(char * gcode);
 
   static inline void home_all_axes(const bool keep_leveling=false) {
-    extern const char G28_STR[];
     process_subcommands_now_P(keep_leveling ? G28_STR : TERN(G28_L0_ENSURES_LEVELING_OFF, PSTR("G28L0"), G28_STR));
   }
 
@@ -709,6 +711,8 @@ private:
   TERN_(PIDTEMPBED, static void M304());
 
   TERN_(HAS_USER_THERMISTORS, static void M305());
+
+  TERN_(PIDTEMPCHAMBER, static void M309());
 
   #if HAS_MICROSTEPS
     static void M350();
