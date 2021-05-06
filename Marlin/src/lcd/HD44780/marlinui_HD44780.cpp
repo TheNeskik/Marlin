@@ -558,7 +558,11 @@ FORCE_INLINE void _draw_bed_status(const bool blink) {
 
   FORCE_INLINE void _draw_print_progress() {
     const uint8_t progress = ui.get_progress_percent();
-    lcd_put_u8str_P(PSTR(TERN(SDSUPPORT, "SD", "P:")));
+    if (print_job_timer.isRunning()&& IS_SD_PRINTING())
+      lcd_put_u8str_P("SD :");
+    else
+      lcd_put_u8str_P("USB:");
+    // lcd_put_u8str_P(PSTR(TERN(SDSUPPORT, "SD", "P:"))); 
     if (progress)
       lcd_put_u8str(ui8tostr3rj(progress));
     else
