@@ -136,21 +136,21 @@
 #define Z_DIR_PIN                             48
 #define Z_ENABLE_PIN                          62
 #ifndef Z_CS_PIN
-  #define Z_CS_PIN                            40
+  #define Z_CS_PIN                            42
 #endif
 
 #define E0_STEP_PIN                           26
 #define E0_DIR_PIN                            28
 #define E0_ENABLE_PIN                         24
 #ifndef E0_CS_PIN
-  #define E0_CS_PIN                           42
+  #define E0_CS_PIN                           59
 #endif
 
 #define E1_STEP_PIN                           36
 #define E1_DIR_PIN                            34
 #define E1_ENABLE_PIN                         30
 #ifndef E1_CS_PIN
-  #define E1_CS_PIN                           44
+  #define E1_CS_PIN                           63
 #endif
 
 //
@@ -287,13 +287,13 @@
 //
 #if ENABLED(TMC_USE_SW_SPI)
   #ifndef TMC_SW_MOSI
-    #define TMC_SW_MOSI                       66
+    #define TMC_SW_MOSI                       51
   #endif
   #ifndef TMC_SW_MISO
-    #define TMC_SW_MISO                       44
+    #define TMC_SW_MISO                       50
   #endif
   #ifndef TMC_SW_SCK
-    #define TMC_SW_SCK                        64
+    #define TMC_SW_SCK                        52
   #endif
 #endif
 
@@ -515,12 +515,12 @@
     #elif ENABLED(ZONESTAR_LCD)
 
       //#error "CAUTION! ZONESTAR_LCD on RAMPS requires wiring modifications. It plugs into AUX2 but GND and 5V need to be swapped. Comment out this line to continue."
-      #define LCD_PINS_RS                     64
-      #define LCD_PINS_ENABLE                 44
-      #define LCD_PINS_D4                     63
-      #define LCD_PINS_D5                     40
-      #define LCD_PINS_D6                     42
-      #define LCD_PINS_D7                     65
+      #define LCD_PINS_RS                     16
+      #define LCD_PINS_ENABLE                 EXP1_03_PIN
+      #define LCD_PINS_D4                     EXP1_10_PIN
+      #define LCD_PINS_D5                     EXP1_08_PIN
+      #define LCD_PINS_D6                     EXP1_06_PIN
+      #define LCD_PINS_D7                     EXP1_04_PIN
 
     #else
 
